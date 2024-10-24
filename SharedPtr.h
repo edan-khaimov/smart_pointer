@@ -38,7 +38,7 @@ public:
         requires(!isSameV<T, U>);
     explicit operator bool() const;
     Deleter getDeleter() const;
-    U* get() const;
+    const U* get() const;
     void reset();
     void reset(U* newPtr);
     [[nodiscard]] size_t getUsageCount() const;
@@ -145,7 +145,7 @@ Deleter SharedPtr<T, Deleter>::getDeleter() const {
 }
 
 template<typename T, typename Deleter>
-typename SharedPtr<T, Deleter>::U* SharedPtr<T, Deleter>::get() const {
+const typename SharedPtr<T, Deleter>::U* SharedPtr<T, Deleter>::get() const {
     return ptr;
 }
 
@@ -169,7 +169,7 @@ template<typename T, typename Deleter>
 size_t SharedPtr<T, Deleter>::getUsageCount() const {
     if (cb) {
         return cb->strongCount;
-    };
+    }
     return 0;
 }
 

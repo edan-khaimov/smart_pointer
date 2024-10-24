@@ -27,7 +27,7 @@ public:
         requires(!isSameV<T, U>);
     explicit operator bool() const;
     Deleter getDeleter() const;
-    U* get() const;
+    const U* get() const;
     void reset(U* other);
     U* release();
     ~UniquePtr();
@@ -84,7 +84,7 @@ Deleter UniquePtr<T, Deleter>::getDeleter() const {
 }
 
 template<typename T, typename Deleter>
-typename UniquePtr<T, Deleter>::U* UniquePtr<T, Deleter>::get() const {
+const typename UniquePtr<T, Deleter>::U* UniquePtr<T, Deleter>::get() const {
     return ptr;
 }
 
