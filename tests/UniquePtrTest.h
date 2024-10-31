@@ -5,7 +5,7 @@
 
 void testUniquePtrCtors() {
     UniquePtr<int> a;
-    assert(a.get() == nullptr);
+    assert(a == nullptr);
     auto b = UniquePtr<double>(new double(8.0));
     assert(*b == 8.0);
 }
@@ -13,7 +13,7 @@ void testUniquePtrCtors() {
 void testUniquePtrMoveCtor() {
     auto a = UniquePtr<int>(new int(8));
     auto b = UniquePtr<int>(move(a));
-    assert(a.get() == nullptr);
+    assert(a == nullptr);
     assert(*b == 8);
 }
 
@@ -22,7 +22,7 @@ void testUniquePtrMoveAssignmentOperator() {
     auto b = UniquePtr<int>(new int(9));
     b = move(a);
     assert(*b == 8);
-    assert(a.get() == nullptr);
+    assert(a == nullptr);
 }
 
 void testUniquePtrIndirectionOperator() {
@@ -58,7 +58,7 @@ void testUniquePtrReset() {
 void testUniquePtrRelease() {
     auto a = UniquePtr<int>(new int(8));
     int* b = a.release();
-    assert(a.get() == nullptr);
+    assert(a == nullptr);
     assert(*b == 8);
 }
 
@@ -73,12 +73,6 @@ void testUniquePtrCompareOperators() {
     assert((c == nullptr) == true);
     assert((a == nullptr) == false);
     assert((nullptr != a) == true);
-}
-
-void testUniquePtrGet() {
-    int *ptr = new int(8);
-    auto a = UniquePtr<int>(ptr);
-    assert(a.get() == ptr);
 }
 
 void testMakeUnique() {

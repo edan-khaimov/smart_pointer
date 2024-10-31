@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Deleters.h"
-#include "isSame.h"
+#include "isArray.h"
 #include "move.h"
 #include "removeExtent.h"
 
@@ -12,6 +12,28 @@ class UniquePtr {
 private:
     U* ptr = nullptr;
 
+    U* get() const;
+    Deleter getDeleter() const;
+
+    friend bool operator==(const UniquePtr& ptr1, const UniquePtr& ptr2) {
+        return ptr1.get() == ptr2.get();
+    }
+    friend bool operator!=(const UniquePtr& ptr1, const UniquePtr& ptr2) {
+        return ptr1.get() != ptr2.get();
+    }
+    friend bool operator==(std::nullptr_t, const UniquePtr& ptr1) {
+        return ptr1.get() == nullptr;
+    }
+    friend bool operator!=(std::nullptr_t, const UniquePtr& ptr1) {
+        return ptr1.get() != nullptr;
+    }
+    friend bool operator==(const UniquePtr& ptr1, std::nullptr_t) {
+        return ptr1.get() == nullptr;
+    }
+    friend bool operator!=(const UniquePtr& ptr1, std::nullptr_t) {
+        return ptr1.get() != nullptr;
+    }
+
 public:
     UniquePtr() = default;
     explicit UniquePtr(U* ptr);
@@ -20,14 +42,12 @@ public:
     UniquePtr(UniquePtr<T, Deleter>&& other) noexcept;
     UniquePtr& operator=(UniquePtr<T, Deleter>&& other) noexcept;
     U& operator*() const
-        requires isSameV<T, U>;
+        requires(!isArray<T>);
     U* operator->() const
-        requires isSameV<T, U>;
+        requires(!isArray<T>);
     U& operator[](size_t index) const
-        requires(!isSameV<T, U>);
+        requires isArray<T>;
     explicit operator bool() const;
-    Deleter getDeleter() const;
-    const U* get() const;
     void reset(U* other);
     U* release();
     ~UniquePtr();
@@ -54,21 +74,21 @@ UniquePtr<T, Deleter>& UniquePtr<T, Deleter>::operator=(UniquePtr<T, Deleter>&& 
 
 template<typename T, typename Deleter>
 typename UniquePtr<T, Deleter>::U& UniquePtr<T, Deleter>::operator*() const
-    requires isSameV<T, U>
+    requires(!isArray<T>)
 {
     return *ptr;
 }
 
 template<typename T, typename Deleter>
 typename UniquePtr<T, Deleter>::U* UniquePtr<T, Deleter>::operator->() const
-    requires isSameV<T, U>
+    requires(!isArray<T>)
 {
     return ptr;
 }
 
 template<typename T, typename Deleter>
 typename UniquePtr<T, Deleter>::U& UniquePtr<T, Deleter>::operator[](size_t index) const
-    requires(!isSameV<T, U>)
+    requires isArray<T>
 {
     return ptr[index];
 }
@@ -84,7 +104,7 @@ Deleter UniquePtr<T, Deleter>::getDeleter() const {
 }
 
 template<typename T, typename Deleter>
-const typename UniquePtr<T, Deleter>::U* UniquePtr<T, Deleter>::get() const {
+typename UniquePtr<T, Deleter>::U* UniquePtr<T, Deleter>::get() const {
     return ptr;
 }
 
@@ -105,49 +125,18 @@ void UniquePtr<T, Deleter>::reset(UniquePtr::U* other) {
 template<typename T, typename Deleter>
 UniquePtr<T, Deleter>::~UniquePtr() {
     getDeleter()(ptr);
-    ptr = nullptr;
 }
 
 template<typename T, typename Deleter = DefaultDelete<T>, typename... Args>
 UniquePtr<T, Deleter> makeUnique(Args... args)
-    requires isSameV<T, removeExtentT<T>>
+    requires(!isArray<T>)
 {
     return UniquePtr<T, Deleter>(new T(forward<Args>(args)...));
 }
 
 template<typename T, typename Deleter = DefaultDelete<T>>
 UniquePtr<T, Deleter> makeUnique(size_t size)
-    requires(!isSameV<T, removeExtentT<T>>)
+    requires isArray<T>
 {
-    return UniquePtr<T, Deleter>(new removeExtentT<T>[size]());
-}
-
-template<typename T, typename Deleter = DefaultDelete<T>>
-bool operator==(const UniquePtr<T, Deleter>& ptr1, const UniquePtr<T, Deleter>& ptr2) {
-    return ptr1.get() == ptr2.get();
-}
-
-template<typename T, typename Deleter = DefaultDelete<T>>
-bool operator!=(const UniquePtr<T, Deleter>& ptr1, const UniquePtr<T, Deleter>& ptr2) {
-    return ptr1.get() != ptr2.get();
-}
-
-template<typename T, typename Deleter = DefaultDelete<T>>
-bool operator==(const UniquePtr<T, Deleter>& ptr, std::nullptr_t) {
-    return ptr.get() == nullptr;
-}
-
-template<typename T, typename Deleter = DefaultDelete<T>>
-bool operator!=(const UniquePtr<T, Deleter>& ptr, std::nullptr_t) {
-    return ptr.get() != nullptr;
-}
-
-template<typename T, typename Deleter = DefaultDelete<T>>
-bool operator==(std::nullptr_t, const UniquePtr<T, Deleter>& ptr) {
-    return ptr.get() == nullptr;
-}
-
-template<typename T, typename Deleter = DefaultDelete<T>>
-bool operator!=(std::nullptr_t, const UniquePtr<T, Deleter>& ptr) {
-    return ptr.get() != nullptr;
+    return UniquePtr<T, Deleter>(new removeExtentT<T>[size]());// почитать, как можно узнать длину массива
 }

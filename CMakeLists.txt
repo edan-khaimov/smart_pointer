@@ -6,7 +6,7 @@ set(CMAKE_CXX_STANDARD 23)
 add_executable(smart_pointers main.cpp
         UniquePtr.h
         removeExtent.h
-        isSame.h
+        isArray.h
         SharedPtr.h
         Sequence.h
         WeakPtr.h
@@ -14,6 +14,8 @@ add_executable(smart_pointers main.cpp
         tests/test.h
         tests/SharedPtrTest.h
         tests/WeakPtrTest.h
+        ArraySequence.h
+        ArraySequence.h
 )
 
 target_compile_options(smart_pointers PRIVATE -fconcepts)

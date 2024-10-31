@@ -25,14 +25,14 @@ void testSharedPtrMoveCtor() {
     auto a = SharedPtr<int>(new int(8));
     auto b = SharedPtr<int>(move(a));
     assert(b.getUsageCount() == 1);
-    assert(a.get() == nullptr);
+    assert(a == nullptr);
 }
 
 void testSharedPtrCopyAssignmentOperator() {
     int *ptr = new int(8);
     auto a = SharedPtr<int>(ptr);
     auto b = SharedPtr<int>(new int(9));
-    auto c = SharedPtr<int>(ptr);
+    auto c = SharedPtr<int>(new int(10));
     a = b;
     assert(b.getUsageCount() == 2);
     assert(c.getUsageCount() == 1);
@@ -43,17 +43,11 @@ void testSharedPtrMoveAssignmentOperator() {
     int *ptr = new int(8);
     auto a = SharedPtr<int>(ptr);
     auto b = SharedPtr<int>(new int(9));
-    auto c = SharedPtr<int>(ptr);
+    auto c = SharedPtr<int>(new int(10));
     a = move(b);
     assert(a.getUsageCount() == 1);
     assert(c.getUsageCount() == 1);
     assert(*a == 9);
-}
-
-void testSharedPtrGet() {
-    auto* ptr = new double(8.0);
-    auto a = SharedPtr<double>(ptr);
-    assert(a.get() == ptr);
 }
 
 void testSharedPtrIndirectionOperator() {

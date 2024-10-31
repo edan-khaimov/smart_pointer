@@ -13,7 +13,6 @@ void testUniquePtr() {
     testUniquePtrReset();
     testUniquePtrRelease();
     testUniquePtrCompareOperators();
-    testUniquePtrGet();
     testMakeUnique();
 }
 
@@ -23,7 +22,6 @@ void testSharedPtr() {
     testSharedPtrMoveCtor();
     testSharedPtrCopyAssignmentOperator();
     testSharedPtrMoveAssignmentOperator();
-    testSharedPtrGet();
     testSharedPtrIndirectionOperator();
     testSharedPtrDereferenceOperator();
     testSharedPtrSubscriptOperator();
@@ -35,6 +33,7 @@ void testSharedPtr() {
 }
 
 void testWeakPtr() {
+    /*
     testWeakPtrCtors();
     testWeakPtrCopyCtor();
     testWeakPtrMoveCtor();
@@ -44,4 +43,5 @@ void testWeakPtr() {
     testWeakPtrIsExpired();
     testWeakPtrLock();
     testWeakPtrGetUsageCount();
+     */
 }

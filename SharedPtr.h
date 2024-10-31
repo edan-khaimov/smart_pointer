@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Deleters.h"
-#include "isSame.h"
+#include "isArray.h"
 #include "move.h"
 #include "removeExtent.h"
 
@@ -20,8 +20,30 @@ class SharedPtr {
 private:
     U* ptr = nullptr;
     ControlBlock* cb = nullptr;
+
     void release();
+    Deleter getDeleter() const;
+    U* get() const;
     friend class WeakPtr<T, Deleter>;
+
+    friend bool operator==(const SharedPtr<T, Deleter>& ptr1, const SharedPtr<T, Deleter>& ptr2) {
+        return ptr1.get() == ptr2.get();
+    }
+    friend bool operator!=(const SharedPtr<T, Deleter>& ptr1, const SharedPtr<T, Deleter>& ptr2) {
+        return ptr1.get() != ptr2.get();
+    }
+    friend bool operator==(const SharedPtr<T, Deleter>& ptr1, std::nullptr_t) {
+        return ptr1.get() == nullptr;
+    }
+    friend bool operator!=(const SharedPtr<T, Deleter>& ptr1, std::nullptr_t) {
+        return ptr1.get() != nullptr;
+    }
+    friend bool operator==(std::nullptr_t, const SharedPtr<T, Deleter>& ptr1) {
+        return ptr1.get() == nullptr;
+    }
+    friend bool operator!=(std::nullptr_t, const SharedPtr& ptr1) {
+        return ptr1.get() != nullptr;
+    }
 public:
     SharedPtr() = default;
     explicit SharedPtr(U* ptr);
@@ -31,14 +53,12 @@ public:
     SharedPtr(SharedPtr<T, Deleter>&& other) noexcept;
     SharedPtr& operator=(SharedPtr<T, Deleter>&& other) noexcept;
     U& operator*() const
-        requires isSameV<T, U>;
+        requires (!isArray<T>);
     U* operator->() const
-        requires isSameV<T, U>;
+        requires (!isArray<T>);
     U& operator[](size_t index) const
-        requires(!isSameV<T, U>);
+        requires isArray<T>;
     explicit operator bool() const;
-    Deleter getDeleter() const;
-    const U* get() const;
     void reset();
     void reset(U* newPtr);
     [[nodiscard]] size_t getUsageCount() const;
@@ -115,21 +135,21 @@ SharedPtr<T, Deleter>& SharedPtr<T, Deleter>::operator=(SharedPtr<T, Deleter>&& 
 
 template<typename T, typename Deleter>
 typename SharedPtr<T, Deleter>::U& SharedPtr<T, Deleter>::operator*() const
-    requires isSameV<T, U>
+    requires (!isArray<T>)
 {
     return *ptr;
 }
 
 template<typename T, typename Deleter>
 typename SharedPtr<T, Deleter>::U* SharedPtr<T, Deleter>::operator->() const
-    requires isSameV<T, U>
+    requires (!isArray<T>)
 {
     return ptr;
 }
 
 template<typename T, typename Deleter>
 typename SharedPtr<T, Deleter>::U& SharedPtr<T, Deleter>::operator[](size_t index) const
-    requires(!isSameV<T, U>)
+    requires isArray<T>
 {
     return ptr[index];
 }
@@ -145,7 +165,7 @@ Deleter SharedPtr<T, Deleter>::getDeleter() const {
 }
 
 template<typename T, typename Deleter>
-const typename SharedPtr<T, Deleter>::U* SharedPtr<T, Deleter>::get() const {
+typename SharedPtr<T, Deleter>::U* SharedPtr<T, Deleter>::get() const {
     return ptr;
 }
 
@@ -185,44 +205,14 @@ SharedPtr<T, Deleter>::~SharedPtr() {
 
 template<typename T, typename Deleter = DefaultDelete<T>, typename... Args>
 SharedPtr<T, Deleter> makeShared(Args... args)
-    requires isSameV<T, removeExtentT<T>>
+    requires (!isArray<T>)
 {
     return SharedPtr<T, Deleter>(new T(forward<Args>(args)...));
 }
 
 template<typename T, typename Deleter = DefaultDelete<T>>
 SharedPtr<T, Deleter> makeShared(size_t size)
-    requires(!isSameV<T, removeExtentT<T>>)
+    requires isArray<T>
 {
     return SharedPtr<T, Deleter>(new removeExtentT<T>[size]());
-}
-
-template<typename T, typename Deleter = DefaultDelete<T>>
-bool operator==(const SharedPtr<T, Deleter>& ptr1, const SharedPtr<T, Deleter>& ptr2) {
-    return ptr1.get() == ptr2.get();
-}
-
-template<typename T, typename Deleter = DefaultDelete<T>>
-bool operator!=(const SharedPtr<T, Deleter>& ptr1, const SharedPtr<T, Deleter>& ptr2) {
-    return ptr1.get() != ptr2.get();
-}
-
-template<typename T, typename Deleter = DefaultDelete<T>>
-bool operator==(const SharedPtr<T, Deleter>& ptr, std::nullptr_t) {
-    return ptr.get() == nullptr;
-}
-
-template<typename T, typename Deleter = DefaultDelete<T>>
-bool operator!=(const SharedPtr<T, Deleter>& ptr, std::nullptr_t) {
-    return ptr.get() != nullptr;
-}
-
-template<typename T, typename Deleter = DefaultDelete<T>>
-bool operator==(std::nullptr_t, const SharedPtr<T, Deleter>& ptr) {
-    return ptr.get() == nullptr;
-}
-
-template<typename T, typename Deleter = DefaultDelete<T>>
-bool operator!=(std::nullptr_t, const SharedPtr<T, Deleter>& ptr) {
-    return ptr.get() != nullptr;
 }
