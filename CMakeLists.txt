@@ -8,7 +8,6 @@ add_executable(smart_pointers main.cpp
         removeExtent.h
         isArray.h
         SharedPtr.h
-        Sequence.h
         WeakPtr.h
         tests/UniquePtrTest.h
         tests/test.h
@@ -16,6 +15,7 @@ add_executable(smart_pointers main.cpp
         tests/WeakPtrTest.h
         ArraySequence.h
         ArraySequence.h
+        tests/ArraySequenceTest.h
 )
 
 target_compile_options(smart_pointers PRIVATE -fconcepts)

@@ -5,5 +5,6 @@ int main() {
     testUniquePtr();
     testSharedPtr();
     testWeakPtr();
+    testArraySequence();
     return 0;
 }

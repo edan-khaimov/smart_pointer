@@ -2,6 +2,7 @@
 #include "UniquePtrTest.h"
 #include "SharedPtrTest.h"
 #include "WeakPtrTest.h"
+#include "ArraySequenceTest.h"
 
 void testUniquePtr() {
     testUniquePtrCtors();
@@ -33,7 +34,6 @@ void testSharedPtr() {
 }
 
 void testWeakPtr() {
-    /*
     testWeakPtrCtors();
     testWeakPtrCopyCtor();
     testWeakPtrMoveCtor();
@@ -43,5 +43,10 @@ void testWeakPtr() {
     testWeakPtrIsExpired();
     testWeakPtrLock();
     testWeakPtrGetUsageCount();
-     */
+}
+
+void testArraySequence() {
+    testArrayCtors();
+    testArrayCopyCtor();
+    testArrayMoveCtor();
 }
