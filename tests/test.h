@@ -56,4 +56,6 @@ void testArraySequence() {
     testArrayIndexOperator();
     testArrayCopyAssignmentOperator();
     testArrayMoveAssignmentOperator();
+    testArrayGetSubArray();
+    testArrayConcat();
 }

@@ -141,3 +141,30 @@ void testArrayMoveAssignmentOperator() {
         assert(i == d[i]);
     }
 }
+
+void testArrayGetSubArray() {
+    auto arr = makeUnique<int[]>(5);
+    for (int i = 0; i < 5; i++) {
+        arr[i] = i;
+    }
+    ArraySequence<int> c(move(arr), 5);
+    auto d = c.GetSubArray(1, 3);
+    assert(d.GetLength() == 3);
+    for (int i = 0; i < 3; i++) {
+        assert(d[i] == i + 1);
+    }
+}
+
+void testArrayConcat() {
+    auto arr = makeUnique<int[]>(5);
+    for (int i = 0; i < 5; i++) {
+        arr[i] = i;
+    }
+    ArraySequence<int> c(arr, 5);
+    ArraySequence<int> d(arr, 5);
+    auto a = c.Concat(d);
+    assert(a.GetLength() == 10);
+    for (int i = 0; i < 10; i++) {
+        assert(a[i] == (i % 5));
+    }
+}

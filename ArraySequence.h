@@ -92,6 +92,28 @@ public:
         return *this;
     }
 
+    ArraySequence<T> Concat(const ArraySequence<T>& other) const {
+        ArraySequence<T> result(size + other.size);
+        for (size_t i = 0; i < size; i++) {
+            result[i] = Get(i);
+        }
+        for (size_t i = 0; i < other.size; i++) {
+            result[i + size] = other.Get(i);
+        }
+        return result;
+    }
+
+    ArraySequence<T> GetSubArray(const size_t startIndex, const size_t endIndex) const {
+        if (endIndex >= size || startIndex >= size || endIndex < startIndex) {
+            throw std::out_of_range("Invalid index");
+        }
+        ArraySequence<T> result(endIndex - startIndex + 1);
+        for (size_t i = startIndex; i <= endIndex; i++) {
+            result[i - startIndex] = Get(i);
+        }
+        return result;
+    }
+
     T& operator[](const size_t& index) {
         return data[index];
     }
