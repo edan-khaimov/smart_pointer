@@ -45,3 +45,99 @@ void testArrayMoveCtor() {
     assert(c.GetLength() == 0);
 }
 
+void testArrayGetters() {
+    auto arr = makeUnique<int[]>(5);
+    for (int i = 0; i < 5; i++) {
+        arr[i] = i;
+    }
+    ArraySequence<int> c(arr, 5);
+    assert(c.GetLength() == 5);
+    c.Append(6);
+    assert(c.GetLength() == 6);
+    for (int i = 0; i < 5; i++) {
+        assert(arr[i] == c.Get(i));
+    }
+    assert(c.Get(5) == 6);
+    assert(c.GetFirst() == 0);
+    assert(c.GetLast() == 6);
+}
+
+void testArrayAppend() {
+    auto arr = makeUnique<int[]>(5);
+    for (int i = 0; i < 5; i++) {
+        arr[i] = i;
+    }
+    ArraySequence<int> c(move(arr), 5);
+    c.Append(4);
+    c.Append(8);
+    assert(c.GetLength() == 7);
+    for (int i = 0; i < 5; i++) {
+        c[i] = i;
+    }
+    assert(c[5] == 4 && c[6] == 8);
+}
+
+void testArrayPrepend() {
+    auto arr = makeUnique<int[]>(5);
+    for (int i = 0; i < 5; i++) {
+        arr[i] = i;
+    }
+    ArraySequence<int> c(move(arr), 5);
+    c.Prepend(4);
+    c.Prepend(8);
+    assert(c.GetLength() == 7);
+    for (int i = 2; i < 5; i++) {
+        c[i] = i;
+    }
+    assert(c[0] == 8 && c[1] == 4);
+}
+
+void testArrayInsertAt() {
+    auto arr = makeUnique<int[]>(5);
+    for (int i = 0; i < 5; i++) {
+        arr[i] = i;
+    }
+    ArraySequence<int> c(move(arr), 5);
+    c.InsertAt(4, 1);
+    assert(c[0] == 0 && c[1] == 4);
+    for (int i = 2; i < 6; i++) {
+        assert(c[i] == i - 1);
+    }
+}
+
+void testArrayIndexOperator() {
+    auto arr = makeUnique<int[]>(5);
+    for (int i = 0; i < 5; i++) {
+        arr[i] = i;
+    }
+    ArraySequence<int> c(arr, 5);
+    for (int i = 0; i < 5; i++) {
+        assert(c[i] == arr[i]);
+    }
+}
+
+void testArrayCopyAssignmentOperator() {
+    auto arr = makeUnique<int[]>(5);
+    for (int i = 0; i < 5; i++) {
+        arr[i] = i;
+    }
+    ArraySequence<int> c(move(arr), 5);
+    auto d = c;
+    assert(d.GetLength() == 5);
+    for (int i = 0; i < 5; i++) {
+        assert(c[i] == d[i]);
+    }
+}
+
+void testArrayMoveAssignmentOperator() {
+    auto arr = makeUnique<int[]>(5);
+    for (int i = 0; i < 5; i++) {
+        arr[i] = i;
+    }
+    ArraySequence<int> c(move(arr), 5);
+    auto d = move(c);
+    assert(c.GetLength() == 0);
+    for (int i = 0; i < 5; i++) {
+        assert(i == d[i]);
+    }
+}

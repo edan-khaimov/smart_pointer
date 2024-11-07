@@ -78,18 +78,49 @@ public:
     }
 
     ArraySequence<T>& InsertAt(const T& item, const size_t& index) {
+        if (index >= size) {
+            throw std::out_of_range("Invalid index");
+        }
         if (size == capacity) {
             Resize(capacity * 2);
         }
-        for (size_t i = index; i < ++size; i++) {
-            data[i + 1] = move(data[i]);
+        for (size_t i = size; i > index; i--) {
+            data[i] = data[i - 1];
         }
         data[index] = item;
+        ++size;
         return *this;
     }
 
     T& operator[](const size_t& index) {
         return data[index];
+    }
+
+    const T& operator[](const size_t& index) const {
+        return data[index];
+    }
+
+    ArraySequence<T>& operator=(const ArraySequence<T>& other) {
+        if (this != &other) {
+            size = other.size;
+            capacity = other.capacity;
+            data = makeUnique<T[]>(capacity);
+            for (size_t i = 0; i < size; i++) {
+                data[i] = other.data[i];
+            }
+        }
+        return *this;
+    }
+
+    ArraySequence<T>& operator=(ArraySequence<T>&& other) noexcept {
+        if (this != &other) {
+            data = move(other.data);
+            size = other.size;
+            capacity = other.capacity;
+            other.size = 0;
+            other.capacity = 0;
+        }
+        return *this;
     }
 
     ~ArraySequence() = default;

@@ -49,4 +49,11 @@ void testArraySequence() {
     testArrayCtors();
     testArrayCopyCtor();
     testArrayMoveCtor();
+    testArrayGetters();
+    testArrayAppend();
+    testArrayPrepend();
+    testArrayInsertAt();
+    testArrayIndexOperator();
+    testArrayCopyAssignmentOperator();
+    testArrayMoveAssignmentOperator();
 }
