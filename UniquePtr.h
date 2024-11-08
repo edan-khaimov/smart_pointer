@@ -6,6 +6,17 @@
 #include "removeExtent.h"
 
 template<typename T, typename Deleter = DefaultDelete<T>>
+class UniquePtr;
+
+template<typename T, typename Deleter = DefaultDelete<T>, typename... Args>
+UniquePtr<T, Deleter> makeUnique(Args... args)
+    requires(!isArray<T>);
+
+template<typename T, typename Deleter = DefaultDelete<T>>
+UniquePtr<T, Deleter> makeUnique(const size_t& size)
+    requires isArray<T>;
+
+template<typename T, typename Deleter>
 class UniquePtr {
     using U = removeExtentT<T>;
 
@@ -50,6 +61,23 @@ public:
     explicit operator bool() const;
     void reset(U* other);
     U* release();
+
+    UniquePtr<T> copy()
+        requires (!isArray<T>)
+    {
+        return makeUnique<T>(*ptr);
+    }
+
+    UniquePtr<T> copy(const size_t& size)
+        requires isArray<T>
+    {
+        auto result = makeUnique<T>(size);
+        for (size_t i = 0; i < size; i++) {
+            result[i] = ptr[i];
+        }
+        return result;
+    }
+
     ~UniquePtr();
 };
 
@@ -127,16 +155,16 @@ UniquePtr<T, Deleter>::~UniquePtr() {
     getDeleter()(ptr);
 }
 
-template<typename T, typename Deleter = DefaultDelete<T>, typename... Args>
+template<typename T, typename Deleter, typename... Args>
 UniquePtr<T, Deleter> makeUnique(Args... args)
     requires(!isArray<T>)
 {
     return UniquePtr<T, Deleter>(new T(forward<Args>(args)...));
 }
 
-template<typename T, typename Deleter = DefaultDelete<T>>
-UniquePtr<T, Deleter> makeUnique(size_t size)
+template<typename T, typename Deleter>
+UniquePtr<T, Deleter> makeUnique(const size_t& size)
     requires isArray<T>
 {
-    return UniquePtr<T, Deleter>(new removeExtentT<T>[size]());// почитать, как можно узнать длину массива
+    return UniquePtr<T, Deleter>(new removeExtentT<T>[size]());
 }

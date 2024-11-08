@@ -82,3 +82,17 @@ void testMakeUnique() {
     b[0] = 2;
     b[1] = 4;
 }
+
+void testUniquePtrCopy() {
+    auto a = makeUnique<int>(8);
+    auto b = a.copy();
+    assert(*a == *b);
+    auto c = makeUnique<int[]>(4);
+    for (int i = 0; i < 4; i++) {
+        c[i] = i;
+    }
+    auto d = c.copy(4);
+    for (int i = 0; i < 4; i++) {
+        assert(d[i] == c[i]);
+    }
+}

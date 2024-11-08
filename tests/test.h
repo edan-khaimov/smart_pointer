@@ -15,6 +15,7 @@ void testUniquePtr() {
     testUniquePtrRelease();
     testUniquePtrCompareOperators();
     testMakeUnique();
+    testUniquePtrCopy();
 }
 
 void testSharedPtr() {
