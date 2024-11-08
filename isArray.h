@@ -13,13 +13,13 @@ struct falseType {
     using type = falseType;
 };
 
-template <typename T>
+template<typename T>
 struct isArrayType : falseType {};
 
-template <typename T>
+template<typename T>
 struct isArrayType<T[]> : trueType {};
 
-template <typename T, std::size_t N>
+template<typename T, std::size_t N>
 struct isArrayType<T[N]> : trueType {};
 
 template<typename T>
